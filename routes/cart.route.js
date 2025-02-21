@@ -5,7 +5,7 @@ const { addCart, getCart, updateCart, removeCartItem } = require('../controllers
 const router = express.Router();
 
 router.post('/', isAuth ,addCart)
-router.get('/', getCart)
+router.get('/', isAuth ,getCart)
 router.put('/:id', isAuth ,updateCart)
 router.delete('/:id', isAuth ,removeCartItem)
 

@@ -6,10 +6,12 @@ const orderModel = require("../models/order.model");
 const addOrder = async (req, res)=>{
     try {
         const { cartId, paymentMethod, shippingAddress } = req.body;
-        const userId = req.user.id;
+        const userId = req.userId;
 
-        // Fetch the cart details
+        console.log(cartId, " ", userId);
+
         const cart = await Cart.findOne({ _id: cartId, user: userId }).populate('products.product', 'name price');
+
 
         if (!cart || cart.products.length === 0) {
             return res.status(400).json({
@@ -24,8 +26,9 @@ const addOrder = async (req, res)=>{
             totalAmount += item.product.price * item.quantity;
         });
 
-        // 🔴 STEP 1: Process the Payment
         const paymentResult = await processPayment({ orderId: cartId, amount: totalAmount, paymentMethod });
+
+        console.log(paymentResult);
 
         if (!paymentResult.success) {
             return res.status(400).json({
@@ -34,19 +37,17 @@ const addOrder = async (req, res)=>{
             });
         }
 
-        // 🔵 STEP 2: Create the Order after Payment Success
+
         const order = await Order.create({
             user: userId,
-            products: cart.products,
-            totalAmount,
+            cart: cart._id, 
             paymentMethod,
             shippingAddress,
-            status: 'Pending',
+            status: "pending",
+            paymentResult
         });
 
-        // Clear the cart after order placement
         await Cart.findByIdAndDelete(cartId);
-
         res.status(201).json({
             success: true,
             message: "Order placed successfully",
@@ -63,23 +64,39 @@ const addOrder = async (req, res)=>{
 }
  
 const getOrders = async(req, res)=>{
-    const userId = req.userId;
+    try {
+        const userId = req.userId;
+        console.log(userId)
     const orders = await Order.find({user: userId});
 
     res.status(200).json({
         success: true,
         orders
     })
+    } catch (error) {
+        return res.status(300).json({
+            success: true,
+            message: "Error getOrders"
+        })
+    }
 }
 
 const getOrder = async (req, res)=>{
-    const orderid = req.params.id;
-    const order = await Order.findById({orderid});
 
-    res.status(200).json({
-        success: true,
-        order
-    })
+    try {
+        const orderid = req.params.id;
+        const order = await Order.findById(orderid);
+    
+        res.status(200).json({
+            success: true,
+            order
+        })
+    } catch (error) {
+        return res.status(300).json({
+            success: false,
+            message: "Error get order"
+        })
+    }
 }
 
 

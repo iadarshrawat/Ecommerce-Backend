@@ -1,34 +1,36 @@
-const processPayment = async (req, res) => {
+const processPayment = async ({ orderId, amount, paymentMethod }) => {
   try {
-    const { orderId, amount, paymentMethod } = req.body;
+    if (!orderId || !amount || !paymentMethod) {
+      return { success: false, message: "Missing required payment details" };
+    }
+
+    console.log("Processing Payment:", { orderId, amount, paymentMethod });
+
 
     const paymentStatus = Math.random() > 0.2 ? "success" : "failed";
 
     if (paymentStatus === "failed") {
-      return res.status(400).json({
-        success: false,
-        message: "Payment failed. Please try again.",
-      });
+      return { success: false, message: "Payment failed. Please try again." };
     }
 
     const transactionId = `TXN_${Date.now()}`;
 
-    res.status(200).json({
+    console.log("Payment Successful - Transaction ID:", transactionId);
+
+    return {
       success: true,
       message: "Payment Successful",
       transactionId,
       orderId,
       amount,
       paymentMethod,
-    });
+    };
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Payment processing error",
-      error: error.message,
-    });
+    console.error("Payment Processing Error:", error);
+
+    return { success: false, message: "Payment processing error", error: error.message };
   }
 };
 
 
-module.exports = {processPayment}
+module.exports = { processPayment };
