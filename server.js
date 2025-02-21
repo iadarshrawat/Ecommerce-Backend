@@ -25,6 +25,8 @@ app.use('/api/payments', paymentRoute)
 app.use('/api/orders', orderRoute)
 
 
+
+
 app.listen(process.env.PORT, ()=>{
-    console.log(`Server is running on PORT ${process.env.PORT}`);
+    console.log(`Server is running on PORT ${process.env.PORT} number`);
 })
