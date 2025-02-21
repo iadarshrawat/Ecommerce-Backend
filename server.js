@@ -7,9 +7,11 @@ const paymentRoute = require('./routes/payment.route');
 const orderRoute = require('./routes/order.route');
 const { default: connectDB } = require('./db/connectDB');
 const cookieParser = require('cookie-parser');
+const { default: mongoose } = require('mongoose');
 
 
 require('dotenv').config();
+mongoose.set('debug', true);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
