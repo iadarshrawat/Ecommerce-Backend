@@ -25,6 +25,9 @@ app.use('/api/payments', paymentRoute)
 app.use('/api/orders', orderRoute)
 
 
+const a = 45;
+
+console.log(a);
 
 
 app.listen(process.env.PORT, ()=>{
