@@ -25,7 +25,7 @@ app.use('/api/payments', paymentRoute)
 app.use('/api/orders', orderRoute)
 
 
-const a = 45;
+const demo = 45;
 
 console.log(a);
 
